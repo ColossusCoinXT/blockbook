@@ -36,6 +36,7 @@ import (
 	"blockbook/bchain/coins/vipstarcoin"
 	"blockbook/bchain/coins/xzc"
 	"blockbook/bchain/coins/zec"
+	"blockbook/bchain/coins/colx"
 	"blockbook/common"
 	"context"
 	"encoding/json"
@@ -103,6 +104,7 @@ func init() {
 	BlockChainFactories["Divi"] = divi.NewDiviRPC
 	BlockChainFactories["CPUchain"] = cpuchain.NewCPUchainRPC
 	BlockChainFactories["Unobtanium"] = unobtanium.NewUnobtaniumRPC
+	BlockChainFactories["COLX"] = colx.NewColxRPC
 }
 
 // GetCoinNameFromConfig gets coin name and coin shortcut from config file
