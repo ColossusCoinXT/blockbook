@@ -129,7 +129,7 @@ func init() {
 				ScriptPubKey: bchain.ScriptPubKey{
 					Hex: "76a914963c3306f96c2d2b70c89023480c6bbad7d6f0f788ac",
 					Addresses: []string{
-						 "DJqU1kmZhbaVJVwQ57kxnpFLCwsk72KuJ6",
+						"DJqU1kmZhbaVJVwQ57kxnpFLCwsk72KuJ6",
 					},
 				},
 			},
@@ -231,7 +231,7 @@ var testParseBlockTxs = map[int]testBlock{
 		size: 241,
 		time: 1506881534,
 		txs: []string{
-			"835302f89d29e0f3b2a788d513964d937fa04144bdc6ae1c007bd47e3423e0c2"
+			"835302f89d29e0f3b2a788d513964d937fa04144bdc6ae1c007bd47e3423e0c2",
 		},
 	},
 }
