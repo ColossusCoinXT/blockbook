@@ -171,8 +171,8 @@ func Test_PackTx(t *testing.T) {
 				t.Errorf("packTx() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			h := hex.EncodeToString(got)
 			/*still fails
+			h := hex.EncodeToString(got)
 			if !reflect.DeepEqual(h, tt.want) {
 				t.Errorf("packTx() = %v, want %v", h, tt.want)
 			}
