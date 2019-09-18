@@ -171,6 +171,10 @@ func Test_PackTx(t *testing.T) {
 				t.Errorf("packTx() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+			if got == nil {
+				t.Errorf("packTx() got is nil")
+				return
+			}
 			/*still fails
 			h := hex.EncodeToString(got)
 			if !reflect.DeepEqual(h, tt.want) {
