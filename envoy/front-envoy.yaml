@@ -1,0 +1,107 @@
+admin:
+  access_log_path: /dev/stdout
+  address:
+    socket_address: { address: 0.0.0.0, port_value: 9901 }
+
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address: { address: 0.0.0.0, port_value: 443 }
+    filter_chains:
+    - filter_chain_match:
+        server_names: ["blockbook.colossusxt.io"]
+      transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.api.v2.auth.DownstreamTlsContext
+          common_tls_context:
+            tls_certificates:
+            - certificate_chain: { filename: "/etc/letsencrypt/live/blockbook.colossusxt.io/fullchain.pem" }
+              private_key: { filename: "/etc/letsencrypt/live/blockbook.colossusxt.io/privkey.pem" }
+      filters:
+        - name: envoy.http_connection_manager
+          typed_config:
+            "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+            stat_prefix: ingress_http
+            codec_type: AUTO
+            route_config:
+              name: local_route_https
+              virtual_hosts:
+              - name: local_service_https
+                domains: ["*"]
+                cors:
+                  allow_origin_regex:
+                  - "https?:\\/\\/localhost:\\d+"
+                  - "http?:\\/\\/localhost:\\d+"
+                  - ".*"
+                  allow_credentials: true
+                  allow_methods: GET, PUT, DELETE, POST, PATCH, OPTIONS
+                  allow_headers: content-type,origin,authorization
+                  allow_headers: keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web
+                  expose_headers: grpc-status,grpc-message,x-envoy-upstream-service-time
+                routes:
+                - match: { prefix: "/" }
+                  route: { cluster: explorer_backend }
+            http_filters:
+            - name: envoy.cors
+            - name: envoy.router
+    - filter_chain_match:
+        server_names: ["server2.colossusxt.io"]
+      transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.api.v2.auth.DownstreamTlsContext
+          common_tls_context:
+            tls_certificates:
+            - certificate_chain: { filename: "/etc/letsencrypt/live/server2.colossusxt.io/fullchain.pem" }
+              private_key: { filename: "/etc/letsencrypt/live/server2.colossusxt.io/privkey.pem" }
+      filters:
+        - name: envoy.http_connection_manager
+          typed_config:
+            "@type": type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+            stat_prefix: ingress_http
+            codec_type: AUTO
+            route_config:
+              name: local_route_https
+              virtual_hosts:
+              - name: local_service_https
+                domains: ["*"]
+                cors:
+                  allow_origin_regex:
+                  - "https?:\\/\\/localhost:\\d+"
+                  - "http?:\\/\\/localhost:\\d+"
+                  - ".*"
+                  allow_credentials: true
+                  allow_methods: GET, PUT, DELETE, POST, PATCH, OPTIONS
+                  allow_headers: content-type,origin,authorization
+                  allow_headers: keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web
+                  expose_headers: grpc-status,grpc-message,x-envoy-upstream-service-time
+                routes:
+                - match: { prefix: "/" }
+                  route: { cluster: explorer_backend }
+            http_filters:
+            - name: envoy.cors
+            - name: envoy.router
+  clusters:
+  - name: explorer_backend
+    connect_timeout: 0.25s
+    type: LOGICAL_DNS
+    # Comment out the following line to test on v6 networks
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: explorer_backend
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: explorer
+                port_value: 9130
+    # transport_socket:
+    #   name: envoy.transport_sockets.tls
+    #   typed_config:
+    #     "@type": type.googleapis.com/envoy.api.v2.auth.UpstreamTlsContext
+    #     sni: www.google.com
+
