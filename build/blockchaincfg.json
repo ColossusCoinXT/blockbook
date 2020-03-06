@@ -1,0 +1,18 @@
+{
+  "coin_name": "Colx",
+  "coin_shortcut": "COLX",
+  "coin_label": "COLX",
+  "rpc_url": "<RPC_URL>",
+  "rpc_user": "<RPC_USERNAME>",
+  "rpc_pass": "<RPC_PASSWORD>",
+  "rpc_timeout": 25,
+  "parse": true,
+  "message_queue_binding": "<RPC_QUEUE_BINDING>",
+  "subversion": "",
+  "address_format": "",
+  "xpub_magic": 3942565265,
+  "slip44": 1999,
+  "mempool_workers": 8,
+  "mempool_sub_workers": 2,
+  "block_addresses_to_keep": 300
+}
