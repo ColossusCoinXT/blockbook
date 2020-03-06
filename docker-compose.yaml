@@ -1,0 +1,60 @@
+version: "3.5"
+
+volumes:
+  explorer-data:
+  certs:
+
+services:
+  explorer:
+    container_name: explorer
+    build: .
+    command: ['sh', '-c', 'sleep 10 && ./blockbook -sync -blockchaincfg=./blockchaincfg.json -internal=:9030 -public=:9130 -logtostderr']
+    volumes:
+      - explorer-data:/build/data
+    restart: always
+
+  envoy:
+    container_name: envoy
+    image: envoyproxy/envoy:latest
+    command: ['/usr/local/bin/envoy', '-c', '/etc/envoy/envoy.yaml']
+    volumes:
+      - ${PWD}/envoy/front-envoy.yaml:/etc/envoy/envoy.yaml
+      - /etc/letsencrypt:/etc/letsencrypt
+      - certs:/etc/nginx/certs
+    ports:
+      - "0.0.0.0:443:443"
+    restart: always
+  
+  server:
+    container_name: server
+    image: gordonchan/nginx-ssl-ghost
+    volumes:
+      - ${PWD}/envoy/nginx.conf:/etc/nginx/conf.d/default.conf
+      - certs:/etc/nginx/certs
+      - /tmp/letsencrypt/www:/tmp/letsencrypt/www
+    links:
+      - envoy:ghost
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    command: bash -c "mkdir -p /etc/nginx/certs && touch /etc/nginx/certs/dhparam.pem && nginx -g 'daemon off;'"
+
+  letsencrypt:
+    container_name: letsencrypt
+    image: gordonchan/auto-letsencrypt
+    links:
+      - server
+    volumes:
+      - /var/log/letsencrypt/:/var/log/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/lib/letsencrypt:/var/lib/letsencrypt
+      - /tmp/letsencrypt/www:/tmp/letsencrypt/www
+      - certs:/etc/nginx/certs
+    environment:
+      - EMAIL=cmaliwal@deqode.com
+      - WEBROOT_PATH=/tmp/letsencrypt/www
+      - CERTS_PATH=/etc/nginx/certs
+      - DOMAINS=server2.colossusxt.io blockbook.colossusxt.io
+      - CHECK_FREQ=7
+    restart: unless-stopped
