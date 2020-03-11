@@ -52,7 +52,7 @@ services:
       - /tmp/letsencrypt/www:/tmp/letsencrypt/www
       - certs:/etc/nginx/certs
     environment:
-      - EMAIL=cmaliwal@deqode.com
+      - EMAIL=colossuscoinxt@gmail.com
       - WEBROOT_PATH=/tmp/letsencrypt/www
       - CERTS_PATH=/etc/nginx/certs
       - DOMAINS=server2.colossusxt.io blockbook.colossusxt.io
